@@ -33,6 +33,7 @@ def create():
             # Capture the description and save it to a file
             with open(os.path.join(app.config['UPLOAD_FOLDER'], rec_id, "desc.txt"), "w") as f:
                 f.write(desc)
+                
 
     return render_template("create.html", myid=myid)
 
