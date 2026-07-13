@@ -1,0 +1,4 @@
+file 'asus.jpg'
+duration 1
+file 'file_0000000038f871fab50ada5f0e6bcfe6.png'
+duration 1
