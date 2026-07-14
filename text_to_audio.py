@@ -1,20 +1,20 @@
 
 import os
-import uuid
 from elevenlabs import VoiceSettings
 from elevenlabs.client import ElevenLabs
-from config import ELEVENLABS_API_KEY
+from config import ELEVENLABS_API_KEY, ELEVENLABS_VOICE_ID
 
- 
-client = ElevenLabs(
-    api_key=ELEVENLABS_API_KEY,
-)
+
+if not ELEVENLABS_API_KEY:
+    raise RuntimeError("ELEVENLABS_API_KEY is not configured. Add it to your environment or .env file.")
+
+client = ElevenLabs(api_key=ELEVENLABS_API_KEY)
 
 
 def text_to_speech_file(text: str, folder: str) -> str:
     # Calling the text_to_speech conversion API with detailed parameters
     response = client.text_to_speech.convert(
-        voice_id="pNInz6obpgDQGcFmaJgB", # Adam pre-made voice
+        voice_id=ELEVENLABS_VOICE_ID,
         output_format="mp3_22050_32",
         text=text,
         model_id="eleven_turbo_v2_5", # use the turbo model for low latency
