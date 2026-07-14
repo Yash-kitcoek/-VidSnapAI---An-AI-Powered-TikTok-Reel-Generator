@@ -5,8 +5,9 @@ import importlib
 def load_app(monkeypatch, tmp_path):
     monkeypatch.setenv("DATABASE_PATH", str(tmp_path / "test.sqlite3"))
     main = importlib.import_module("main")
-    main.app.config.update(TESTING=True, WTF_CSRF_ENABLED=False)
-    return main.app
+    app = main.create_app()
+    app.config.update(TESTING=True, WTF_CSRF_ENABLED=False)
+    return app
 
 
 def test_create_rejects_missing_description(monkeypatch, tmp_path):

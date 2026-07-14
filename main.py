@@ -12,10 +12,14 @@ ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'webp'}
 MAX_CONTENT_LENGTH = 25 * 1024 * 1024
 
 app = Flask(__name__)
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-app.config['MAX_CONTENT_LENGTH'] = MAX_CONTENT_LENGTH
-app.config['SECRET_KEY'] = FLASK_SECRET_KEY
-init_db()
+
+
+def create_app():
+    app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+    app.config['MAX_CONTENT_LENGTH'] = MAX_CONTENT_LENGTH
+    app.config['SECRET_KEY'] = FLASK_SECRET_KEY
+    init_db()
+    return app
 
 
 def allowed_file(filename):
@@ -127,6 +131,9 @@ def server_error(error):
         title="Something went wrong",
         message="The app hit an unexpected error. Please try again in a moment.",
     ), 500
+
+app = create_app()
+
 
 if __name__ == "__main__":
     app.run(debug=os.getenv("FLASK_DEBUG") == "1")
