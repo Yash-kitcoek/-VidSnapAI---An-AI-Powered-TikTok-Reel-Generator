@@ -1,2 +1,0 @@
-file 'asus.jpg'
-duration 1

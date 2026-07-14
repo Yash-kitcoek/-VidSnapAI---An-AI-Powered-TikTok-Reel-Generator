@@ -6,6 +6,7 @@ __pycache__/
 
 user_uploads/
 static/reels/
+done.txt
 *.mp4
 *.zip
 
