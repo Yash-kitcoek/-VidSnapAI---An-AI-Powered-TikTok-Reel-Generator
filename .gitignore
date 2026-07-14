@@ -10,5 +10,7 @@ static/reels/
 *.zip
 
 instance/
+data/
+*.sqlite3
 .venv/
 venv/

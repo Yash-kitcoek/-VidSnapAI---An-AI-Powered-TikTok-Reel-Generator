@@ -3,7 +3,10 @@
 }
 
 .gallery-grid video{
-    height: 777px;
+    width: 100%;
+    aspect-ratio: 9 / 16;
+    height: auto;
+    background: #111827;
 }
 
 .gallery-title {
@@ -30,7 +33,7 @@
 
 .reel-card {
     background: white;
-    border-radius: 12px;
+    border-radius: 8px;
     overflow: hidden;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
@@ -90,11 +93,118 @@
     font-size: 0.9rem;
 }
 
+.reel-info a {
+    display: inline-block;
+    margin-top: 0.75rem;
+    color: var(--primary-color);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.job-placeholder {
+    aspect-ratio: 9 / 16;
+    background: #111827;
+    color: white;
+    display: grid;
+    place-items: center;
+    min-height: 320px;
+}
+
+.status-pill {
+    border-radius: 999px;
+    display: inline-flex;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    padding: 0.35rem 0.8rem;
+    text-transform: uppercase;
+}
+
+.status-queued {
+    background: #fff7ed;
+    color: #9a3412;
+}
+
+.status-processing {
+    background: #eff6ff;
+    color: #1d4ed8;
+}
+
+.status-completed {
+    background: #ecfdf5;
+    color: #047857;
+}
+
+.status-failed {
+    background: #fef2f2;
+    color: #b91c1c;
+}
+
+.empty-state {
+    color: #666;
+    grid-column: 1 / -1;
+    text-align: center;
+}
+
+.status-container {
+    padding: 3rem 0;
+}
+
+.status-header {
+    margin-bottom: 2rem;
+}
+
+.eyebrow {
+    color: var(--primary-color);
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+}
+
+.status-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(260px, 360px);
+    gap: 1.5rem;
+}
+
+.status-panel {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 1.5rem;
+}
+
+.preview-panel {
+    padding: 0;
+    overflow: hidden;
+}
+
+.preview-panel video {
+    width: 100%;
+    aspect-ratio: 9 / 16;
+    display: block;
+}
+
+.error-box {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 8px;
+    color: #991b1b;
+    margin-top: 1rem;
+    padding: 1rem;
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
     .gallery-grid {
         grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
         gap: 1rem;
+    }
+
+    .status-layout {
+        grid-template-columns: 1fr;
     }
 }
 

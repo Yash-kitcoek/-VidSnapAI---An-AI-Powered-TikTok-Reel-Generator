@@ -1,9 +1,9 @@
-# This file looks for new folders inside user uploads and converts them to reel if they are not already converted
-import os 
 from text_to_audio import text_to_speech_file
 import time
 import subprocess
 from pathlib import Path
+
+from db import get_next_queued_job, init_db, update_job
 
 
 def text_to_audio(folder):
@@ -20,6 +20,7 @@ def create_reel(folder):
     output_file.parent.mkdir(parents=True, exist_ok=True)
     command = [
         "ffmpeg",
+        "-y",
         "-f", "concat",
         "-safe", "0",
         "-i", str(input_file),
@@ -35,20 +36,21 @@ def create_reel(folder):
     subprocess.run(command, check=True)
     
     print("CR - ", folder)
+    return output_file
 
 if __name__ == "__main__":
+    init_db()
     while True:
         print("Processing queue...")
-        Path("done.txt").touch()
-        with open("done.txt", "r", encoding="utf-8") as f:
-            done_folders = f.readlines()
-
-        done_folders = [f.strip() for f in done_folders]
-        folders = os.listdir("user_uploads") 
-        for folder in folders:
-            if(folder not in done_folders): 
-                text_to_audio(folder) # Generate the audio.mp3 from desc.txt
-                create_reel(folder) # Convert the images and audio.mp3 inside the folder to a reel
-                with open("done.txt", "a", encoding="utf-8") as f:
-                    f.write(folder + "\n")
+        job = get_next_queued_job()
+        if job:
+            folder = job["id"]
+            try:
+                update_job(folder, "processing")
+                text_to_audio(folder)
+                output_file = create_reel(folder)
+                update_job(folder, "completed", output_path=str(output_file).replace("\\", "/"))
+            except Exception as exc:
+                update_job(folder, "failed", error=str(exc))
+                print(f"Job {folder} failed: {exc}")
         time.sleep(4)

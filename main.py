@@ -1,10 +1,11 @@
-from flask import Flask, flash, redirect, render_template, request, url_for
+from flask import Flask, flash, jsonify, redirect, render_template, request, url_for
 import uuid
 from werkzeug.utils import secure_filename
 import os
 from pathlib import Path
 
 from config import FLASK_SECRET_KEY
+from db import create_job, get_job, init_db, list_jobs
 
 UPLOAD_FOLDER = 'user_uploads'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'webp'}
@@ -14,6 +15,7 @@ app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = MAX_CONTENT_LENGTH
 app.config['SECRET_KEY'] = FLASK_SECRET_KEY
+init_db()
 
 
 def allowed_file(filename):
@@ -71,17 +73,33 @@ def create():
             with open(upload_path / "input.txt", "a", encoding="utf-8") as f:
                 f.write(f"file '{fl}'\nduration 1\n")
 
-        flash("Your reel has been queued. Start the worker to render it.", "success")
-        return redirect(url_for("gallery"))
+        create_job(rec_id, desc, str(upload_path))
+        flash("Your reel has been queued for rendering.", "success")
+        return redirect(url_for("job_status", job_id=rec_id))
 
     return render_template("create.html", myid=myid)
 
 @app.route("/gallery")
 def gallery():
-    reels_dir = Path("static/reels")
-    reels_dir.mkdir(parents=True, exist_ok=True)
-    reels = sorted(os.listdir(reels_dir), reverse=True)
-    return render_template("gallery.html", reels=reels)
+    jobs = list_jobs()
+    return render_template("gallery.html", jobs=jobs)
+
+
+@app.route("/jobs/<job_id>")
+def job_status(job_id):
+    job = get_job(job_id)
+    if not job:
+        flash("That reel job could not be found.", "error")
+        return redirect(url_for("create"))
+    return render_template("status.html", job=job)
+
+
+@app.route("/api/jobs/<job_id>")
+def job_status_api(job_id):
+    job = get_job(job_id)
+    if not job:
+        return jsonify({"error": "Job not found"}), 404
+    return jsonify(job)
 
 if __name__ == "__main__":
     app.run(debug=os.getenv("FLASK_DEBUG") == "1")

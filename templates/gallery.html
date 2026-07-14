@@ -10,10 +10,25 @@
 <div class="container gallery-container">
     <h1 class="gallery-title">Reel Gallery</h1>
     <div class="gallery-grid">
-        {% for reel in reels %}
-            <video src="/static/reels/{{reel}}" controls></video>
+        {% for job in jobs %}
+            <div class="reel-card">
+                {% if job.status == "completed" and job.output_path %}
+                    <video src="/{{ job.output_path }}" controls></video>
+                {% else %}
+                    <div class="job-placeholder">
+                        <span class="status-pill status-{{ job.status }}">{{ job.status }}</span>
+                    </div>
+                {% endif %}
+                <div class="reel-info">
+                    <h3>{{ job.description[:60] }}{% if job.description|length > 60 %}...{% endif %}</h3>
+                    <p>Job {{ job.id[:8] }}</p>
+                    <a href="{{ url_for('job_status', job_id=job.id) }}">View status</a>
+                </div>
+            </div>
         {% endfor %}
- 
+        {% if not jobs %}
+            <p class="empty-state">No reels yet. Create your first one.</p>
+        {% endif %}
     </div>
 </div>
 {% endblock %} 

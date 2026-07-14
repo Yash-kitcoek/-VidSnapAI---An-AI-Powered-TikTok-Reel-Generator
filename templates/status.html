@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block title %}Reel Status - VidSnapAI{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/gallery.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="container status-container" data-job-id="{{ job.id }}">
+    <div class="status-header">
+        <p class="eyebrow">Render job</p>
+        <h1>Your reel is {{ job.status }}</h1>
+        <span class="status-pill status-{{ job.status }}" id="jobStatus">{{ job.status }}</span>
+    </div>
+
+    <div class="status-layout">
+        <section class="status-panel">
+            <h2>Voiceover Script</h2>
+            <p>{{ job.description }}</p>
+            {% if job.error %}
+                <div class="error-box">{{ job.error }}</div>
+            {% endif %}
+        </section>
+
+        <section class="status-panel preview-panel" id="previewPanel">
+            {% if job.status == "completed" and job.output_path %}
+                <video src="/{{ job.output_path }}" controls></video>
+            {% else %}
+                <div class="job-placeholder">
+                    <span>Waiting for the worker</span>
+                </div>
+            {% endif %}
+        </section>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const container = document.querySelector("[data-job-id]");
+    const jobId = container.dataset.jobId;
+    const statusEl = document.getElementById("jobStatus");
+    const previewPanel = document.getElementById("previewPanel");
+
+    async function refreshStatus() {
+        const response = await fetch(`/api/jobs/${jobId}`);
+        if (!response.ok) return;
+
+        const job = await response.json();
+        statusEl.textContent = job.status;
+        statusEl.className = `status-pill status-${job.status}`;
+
+        if (job.status === "completed" && job.output_path) {
+            previewPanel.innerHTML = `<video src="/${job.output_path}" controls autoplay muted></video>`;
+            clearInterval(timer);
+        }
+
+        if (job.status === "failed") {
+            clearInterval(timer);
+        }
+    }
+
+    const timer = setInterval(refreshStatus, 3000);
+</script>
+{% endblock %}
