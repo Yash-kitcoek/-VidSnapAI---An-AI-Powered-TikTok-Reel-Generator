@@ -6,6 +6,8 @@ VidSnapAI is a Flask-based AI reel generator that accepts image uploads, creates
 
 This codebase is moving from proof-of-concept toward a deployable portfolio project. The current implementation is suitable for local demos after configuring secrets, but it still needs a real job queue, job status UI, and cloud storage before it should be marketed as production-ready.
 
+See [ARCHITECTURE.md](ARCHITECTURE.md) for the system flow and next engineering milestones.
+
 ## Setup
 
 1. Create and activate a virtual environment.
