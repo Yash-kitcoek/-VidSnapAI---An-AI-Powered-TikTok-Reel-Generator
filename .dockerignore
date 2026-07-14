@@ -1,0 +1,12 @@
+.env
+.git
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+data/
+user_uploads/
+static/reels/
+*.mp4
+*.zip

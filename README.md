@@ -29,6 +29,22 @@ python main.py
 python generate_process.py
 ```
 
+## Docker
+
+Run both the Flask web app and the background worker:
+
+```bash
+docker compose up --build
+```
+
+The compose setup mounts `data/`, `user_uploads/`, and `static/reels/` so jobs and generated videos survive container restarts.
+
+## Tests
+
+```bash
+pytest
+```
+
 ## Security Notes
 
 Never commit real API keys. The ElevenLabs key must live in `.env` or in your deployment provider's secret manager.

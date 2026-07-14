@@ -1,0 +1,22 @@
+services:
+  web:
+    build: .
+    command: gunicorn --bind 0.0.0.0:5000 main:app
+    env_file:
+      - .env
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./data:/app/data
+      - ./user_uploads:/app/user_uploads
+      - ./static/reels:/app/static/reels
+
+  worker:
+    build: .
+    command: python generate_process.py
+    env_file:
+      - .env
+    volumes:
+      - ./data:/app/data
+      - ./user_uploads:/app/user_uploads
+      - ./static/reels:/app/static/reels
