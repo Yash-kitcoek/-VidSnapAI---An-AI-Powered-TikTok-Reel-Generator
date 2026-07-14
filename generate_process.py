@@ -1,16 +1,24 @@
 from text_to_audio import text_to_speech_file
+import logging
 import time
 import subprocess
 from pathlib import Path
 
+from config import WORKER_POLL_SECONDS
 from db import get_next_queued_job, init_db, update_job
 
 
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s %(levelname)s %(message)s",
+)
+logger = logging.getLogger("vidsnapai.worker")
+
+
 def text_to_audio(folder):
-    print("TTA - ", folder)
+    logger.info("Generating voiceover for job %s", folder)
     with open(Path("user_uploads") / folder / "desc.txt", encoding="utf-8") as f:
         text = f.read()
-    print(text, folder)
     text_to_speech_file(text, folder)
 
 def create_reel(folder):
@@ -34,23 +42,24 @@ def create_reel(folder):
         str(output_file),
     ]
     subprocess.run(command, check=True)
-    
-    print("CR - ", folder)
+
+    logger.info("Rendered reel for job %s", folder)
     return output_file
 
 if __name__ == "__main__":
     init_db()
+    logger.info("Worker started with %s second polling", WORKER_POLL_SECONDS)
     while True:
-        print("Processing queue...")
         job = get_next_queued_job()
         if job:
             folder = job["id"]
             try:
+                logger.info("Processing job %s", folder)
                 update_job(folder, "processing")
                 text_to_audio(folder)
                 output_file = create_reel(folder)
                 update_job(folder, "completed", output_path=str(output_file).replace("\\", "/"))
             except Exception as exc:
                 update_job(folder, "failed", error=str(exc))
-                print(f"Job {folder} failed: {exc}")
-        time.sleep(4)
+                logger.exception("Job %s failed", folder)
+        time.sleep(WORKER_POLL_SECONDS)
