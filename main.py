@@ -101,5 +101,32 @@ def job_status_api(job_id):
         return jsonify({"error": "Job not found"}), 404
     return jsonify(job)
 
+
+@app.errorhandler(413)
+def upload_too_large(error):
+    return render_template(
+        "error.html",
+        title="Upload too large",
+        message="Your upload is larger than the 25 MB limit. Try fewer or smaller images.",
+    ), 413
+
+
+@app.errorhandler(404)
+def not_found(error):
+    return render_template(
+        "error.html",
+        title="Page not found",
+        message="The page you requested does not exist.",
+    ), 404
+
+
+@app.errorhandler(500)
+def server_error(error):
+    return render_template(
+        "error.html",
+        title="Something went wrong",
+        message="The app hit an unexpected error. Please try again in a moment.",
+    ), 500
+
 if __name__ == "__main__":
     app.run(debug=os.getenv("FLASK_DEBUG") == "1")
